@@ -1,0 +1,13 @@
+name: 'Smartling Context Debugger'
+description: 'A form that helps to debug Smartling context feature.'
+package: 'Translation Management'
+core_version_requirement: ^8.8 || ^9
+type: module
+
+dependencies:
+  - tmgmt_smartling:tmgmt_smartling
+
+# Information added by Drupal.org packaging script on 2021-09-17
+version: '8.x-4.18'
+project: 'tmgmt_smartling'
+datestamp: 1631883765

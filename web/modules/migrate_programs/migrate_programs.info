@@ -1,0 +1,5 @@
+name = Migrate Programs
+description = Migrate program information from CSV 
+core = 7.x 
+dependencies[] = migrate
+files[] = migrate_programs.migrate.inc

@@ -1,0 +1,15 @@
+name: 'TMGMT Extension Suit Test'
+description: 'Test for translator'
+package: Translation Management
+core_version_requirement: ^8.8 || ^9
+type: module
+hidden: true
+
+dependencies:
+ - tmgmt:tmgmt_local
+ - tmgmt_extension_suit:tmgmt_extension_suit
+
+# Information added by Drupal.org packaging script on 2020-08-25
+version: '8.x-3.4'
+project: 'tmgmt_extension_suit'
+datestamp: 1598347787

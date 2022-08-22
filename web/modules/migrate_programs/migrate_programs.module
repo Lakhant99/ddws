@@ -1,0 +1,23 @@
+<?php
+
+/**
+  * Implements hook_migrate_api().
+  */
+function migrate_programs_migrate_api() {
+  return array(
+  'api' => 2,
+  'groups' => array(
+    'migrate_programs' => array(
+    'title' => t('Migrate Programs'),
+    ),  
+  ),  
+  'migrations' => array(
+      'programs' => array(
+        'class_name' => 'MigratePrograms',
+        'group_name' => 'migrate_programs',
+      ),
+    ),
+  );
+}
+
+

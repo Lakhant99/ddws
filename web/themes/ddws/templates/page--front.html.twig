@@ -1,0 +1,184 @@
+<header class="header-section">
+    <header class="header-primary">
+        <div class="left-side">
+        
+            <img alt="Ashok stambh logo" class="img-ashokstambh" src="{{ directory }}/images/logos/ashokstambh.svg">
+            <p class="p-primary">{{ page.overment }}</p>
+        </div>
+        <div class="right-side">
+            {# <img alt="font size image" class="font-image" src="{{ directory }}/images/images/A%20A%20A.svg"> <select class="select-language" name="language">
+                <option value="volvo">
+                    English
+                </option>
+                <option value="saab">
+                    Hindi
+                </option>
+            </select> #}
+            <img alt="font size image" class="font-image" src="{{ directory }}/images/images/A%20A%20A.svg">
+            {{ page.language }}
+            <div class="icons">
+                <a href="{{ path('<front>') }}" title="{{ 'Home'|t }}"><img alt="" src="{{ directory }}/images/logos/facebook.svg"></a> <a href="#"><img alt="" src="{{ directory }}/images/logos/Twitter.svg"></a> <a href="#"><img alt="" src="{{ directory }}/images/logos/Youtube.svg"></a> <a href="#"><img alt="" src="{{ directory }}/images/logos/Instagram.svg"></a> <a href="https://amritmahotsav.nic.in/"><img alt="" src="{{ directory }}/images/logos/azadika.svg"></a> <a href="https://jaljeevanmission.gov.in/"><img alt="" src="{{ directory }}/images/logos/hargharjal.svg"></a> <a href="https://swachhbharatmission.gov.in/"><img alt="" src="{{ directory }}/images/logos/swach-bharat.svg"></a>
+            </div>
+        </div>
+    </header>
+    <header class="header-secondary">
+      <img alt="main logo" src="{{ directory }}/images/logos/mainlogo.svg">
+      {{ page.logo }} 
+        <div class="menu-bar">
+          {{ page.primary_menu }}
+        </div>
+    </header>
+</header>
+
+{# slider section #}
+
+<section class="slider">
+    <div class="container">
+        <!-- Full-width images with number and caption text -->
+        {% for slide in home_page.slides %}
+        <div class="mySlides fade">
+            <!-- <div class="numbertext">1 / 3</div> -->
+            <img src="{{ slide.img_src }}" style="width: 100%"> <!-- <div class="text">Caption Text</div> -->
+        </div>
+         {% endfor %}
+        <a class="prev" onclick="plusSlides(-1)">&#10094;</a> <a class="next" onclick="plusSlides(1)">&#10095;</a>
+    </div><br>
+    <!-- The dots/circles -->
+    <div class="dots-style" style="text-align: center">
+        <span class="dot" onclick="currentSlide(1)"></span> <span class="dot" onclick="currentSlide(2)"></span> <span class="dot" onclick="currentSlide(3)"></span>
+    </div>
+</section>
+
+{# images section#}
+<div class="container-news">
+    <img class="moving-img" src="{{ directory }}/images/images/whatsnew.svg">
+    <div class="hwrap">
+        <div class="hmove">
+        {{ page.news }}
+      </div>
+    </div>
+</div>
+
+ {# testimonial #}
+
+ <div class="container">
+    <div class="links-collection">
+        
+        {{ page.services }}
+
+    </div>
+</div>
+
+{# testimonial 2#}
+
+<section class="section-main-data">
+    <div class="container position">
+        <div class="flex margin-bottom-sm">
+            <div class="whats-new">
+                <h2 class="heading-wahts-new">| Whats New !</h2>
+                {{ page.featured }}
+            </div>
+            <div class="slider slider-new">
+              {% for slide in home_page.photo %}
+                <div class="mySlidesnew fade">
+                    <img alt="" src="{{ slide.img_src }}">
+                    <h2 class="slider-dis">{{ slide.text|t }}</h2>
+                </div>
+                 {% endfor %}
+                <a class="prev" onclick="plusDivs(-1)">&#10094;</a> <a class="next" onclick="plusDivs(1)">&#10095;</a> 
+            </div>
+            {{ page.miniter }}
+        </div>
+        <div class="about-ddws">
+            {{ page.about }}
+        </div>
+    </div>
+</section>
+{# section for nav #}
+<section class="section-nav-other">
+    <div class="container aside-position">
+        <img alt="image with water bubbles" class="water-img" src="{{ directory }}/images/images/nav-other-img.svg">
+        {{ page.feature_second }}
+    </div>
+</section>
+{# foooter #}
+
+<footer>
+    <div class="footer-primary-background footer-pri">
+        <div class="processing-image"><img alt="processing image" class="process-image" src="{{ directory }}/images/Images/processing-image.svg"></div>
+      {{ page.icon }}
+    </div>
+    <div class="footer-secondary">
+            {{ page.footer }}
+        </div>
+        <hr>
+        {{ page.footer_second }}
+    </div>
+        <script>
+      let slideIndex = 1;
+      showSlides(slideIndex);
+
+      // Next/previous controls
+      function plusSlides(n) {
+        showSlides((slideIndex += n));
+      }
+
+      // Thumbnail image controls
+      function currentSlide(n) {
+        showSlides((slideIndex = n));
+      }
+
+      function showSlides(n) {
+        let i;
+        let slides = document.getElementsByClassName("mySlides");
+        let dots = document.getElementsByClassName("dot");
+        if (n > slides.length) {
+          slideIndex = 1;
+        }
+        if (n < 1) {
+          slideIndex = slides.length;
+        }
+        for (i = 0; i < slides.length; i++) {
+          slides[i].style.display = "none";
+        }
+        for (i = 0; i < dots.length; i++) {
+          dots[i].className = dots[i].className.replace(" active", "");
+        }
+        slides[slideIndex - 1].style.display = "block";
+        dots[slideIndex - 1].className += " active";
+      }
+    </script>
+
+    <script>
+      var slideIndex1 = 1;
+      showDivs(slideIndex);
+
+      function plusDivs(n) {
+        showDivs((slideIndex += n));
+      }
+
+      function currentDiv(n) {
+        showDivs((slideIndex = n));
+      }
+
+      function showDivs(n) {
+        var i;
+        var x = document.getElementsByClassName("mySlidesnew");
+        var dots = document.getElementsByClassName("demo");
+        if (n > x.length) {
+          slideIndex = 1;
+        }
+        if (n < 1) {
+          slideIndex = x.length;
+        }
+        for (i = 0; i < x.length; i++) {
+          x[i].style.display = "none";
+        }
+        for (i = 0; i < dots.length; i++) {
+          dots[i].className = dots[i].className.replace(" w3-white", "");
+        }
+        x[slideIndex - 1].style.display = "block";
+        dots[slideIndex - 1].className += " w3-white";
+      }
+    </script>
+</footer>

@@ -1,0 +1,73 @@
+<?php
+use Drupal\media\Entity\Media;
+use Drupal\file\Entity\File;
+/**
+ * @file
+ * Functions to support theming in the DDWS theme.
+ */
+
+/**
+ * Implements hook_preprocess_HOOK() for html.html.twig.
+ */
+function ddws_preprocess_html(&$variables) {
+
+}
+
+/**
+ * Implements hook_preprocess_HOOK() for page.html.twig.
+ */
+function ddws_preprocess_page(&$variables) {
+    // If page is front, add to the $variables values for twig template
+  if ($variables['is_front']) {
+
+    // Create data for slider
+    // Get from DB nids of content type slide_image
+    $query = \Drupal::database()->select('node', 'n');
+    $query->fields('n', ['nid']);
+    $query->condition('n.type', 'slider');
+    $nids = $query->execute()->fetchAll();
+
+    $variables['home_page']['slides'] = array();
+    
+    // get and set values from content type to variable
+    foreach ($nids as $val) {
+      $node = \Drupal\node\Entity\Node::load($val->nid);
+      $text = $node->get('body')->getValue();
+      $img = $node->get('field_images')->getValue();
+      
+      $file = Drupal\file\Entity\File::load($img[0]['target_id']);
+      $img_src = $file->createFileUrl();
+      $variables['home_page']['slides'][] = array(
+        'text' => $text[0]['value'],
+        'img_src' => $file->createFileUrl(),
+      );
+    }
+    $query = \Drupal::database()->select('node', 'n');
+    $query->fields('n', ['nid']);
+    $query->condition('n.type', 'testimonial');
+    $nids = $query->execute()->fetchAll();
+
+    $variables['home_page']['photo'] = array();
+    
+    // get and set values from content type to variable
+    foreach ($nids as $val) {
+      $node = \Drupal\node\Entity\Node::load($val->nid);
+      $text = $node->get('title')->getValue();
+      $img = $node->get('field_image')->getValue();
+      $file = Drupal\file\Entity\File::load($img[0]['target_id']);
+      $img_src = $file->createFileUrl();
+      $variables['home_page']['photo'][] = array(
+        'text' => $text[0]['value'],
+        'img_src' => $file->createFileUrl(),
+      );
+    }
+  }
+
+}
+
+/**
+ * Implements hook_preprocess_HOOK() for node.html.twig.
+ */
+function ddws_preprocess_node(&$variables) {
+
+}

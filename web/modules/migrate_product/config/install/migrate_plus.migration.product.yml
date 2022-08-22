@@ -1,0 +1,39 @@
+# Migration configuration for products.
+id: product
+label: Product
+migration_group: Products
+migration_dependencies: {}
+
+source:
+  plugin: json_source
+  path: product-feed-goes-here
+  headers:
+    Accept: 'application/json'
+  identifier: upc
+  identifierDepth: 1
+  fields:
+    - upc
+    - name
+    - sizesAvailable
+    - description
+    - ratingReviewInformation
+
+destination:
+  plugin: entity:node
+
+process:
+  type:
+    plugin: default_value
+    default_value: product
+
+  title: name
+  field_upc: upc
+  field_sizes_available: sizesAvailable
+  field_description: description
+
+  sticky:
+    plugin: default_value
+    default_value: 0
+  uid:
+    plugin: default_value
+    default_value: 0

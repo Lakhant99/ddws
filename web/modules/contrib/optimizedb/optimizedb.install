@@ -1,0 +1,89 @@
+<?php
+
+/**
+ * @file
+ * Installation file for Database Optimization.
+ */
+
+use Drupal\Core\Url;
+
+/**
+ * Database Drivers with which works module.
+ *
+ * @return string[]
+ *   List drivers.
+ *
+ * @see optimizedb_requirements()
+ */
+function optimizedb_available_db_drivers() {
+  return [
+    'mysql',
+    'pgsql',
+  ];
+}
+
+/**
+ * Implements hook_module_preinstall().
+ *
+ * @see _optimizedb_tables_list()
+ */
+function optimizedb_module_preinstall() {
+  _optimizedb_tables_list();
+}
+
+/**
+ * Implements hook_requirements().
+ */
+function optimizedb_requirements($phase) {
+  $requirements = [];
+  $config = \Drupal::configFactory()->getEditable('optimizedb.settings');
+
+  if ($phase == 'runtime') {
+    // Check, if necessary optimization.
+    $notify_optimize = $config->get('notify_optimize');
+
+    if ($notify_optimize) {
+      // The last time optimization in Unix format.
+      $last_optimization = $config->get('last_optimization');
+
+      // If optimization is not carried out earlier
+      // must display an appropriate message.
+      if ((bool) $last_optimization !== FALSE) {
+        $time_optimization = t('Last run: @date ago.', [
+          '@date' => _optimizedb_date($last_optimization),
+        ]);
+      }
+      else {
+        $time_optimization = t('Optimization yet was not run.');
+      }
+
+      $requirements['optimizedb'] = [
+        'title' => t('Database Optimization'),
+        'description' => t('You must perform <a href="@optimize_link">database optimization</a>. <a href="@hide_link">Hide notification</a>', [
+          '@optimize_link' => Url::fromRoute('optimizedb.admin_page')
+            ->toString(),
+          '@hide_link' => Url::fromRoute('optimizedb.hide')->toString(),
+        ]),
+        'severity' => REQUIREMENT_ERROR,
+        'value' => $time_optimization,
+      ];
+    }
+  }
+
+  if ($phase == 'install') {
+    $db_drivers_list = optimizedb_available_db_drivers();
+    $db_driver = \Drupal::database()->driver();
+
+    if (!in_array($db_driver, $db_drivers_list)) {
+      $requirements['optimizedb'] = [
+        'title' => t('Database Optimization'),
+        'description' => t('The module Optimizedb does not work with db driver "@name".', [
+          '@name' => $db_driver,
+        ]),
+        'severity' => REQUIREMENT_ERROR,
+      ];
+    }
+  }
+
+  return $requirements;
+}

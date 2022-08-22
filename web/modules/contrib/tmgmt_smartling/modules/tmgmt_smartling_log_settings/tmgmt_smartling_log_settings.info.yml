@@ -1,0 +1,11 @@
+name: Smartling Log Settings
+description: 'Set up log severity for each channel and logger.'
+package: 'Translation Management'
+core_version_requirement: ^8.8 || ^9
+type: module
+configure: system.logging_settings
+
+# Information added by Drupal.org packaging script on 2021-09-17
+version: '8.x-4.18'
+project: 'tmgmt_smartling'
+datestamp: 1631883765

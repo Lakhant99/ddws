@@ -1,0 +1,15 @@
+mymodule.example:
+  path: '/mymodule/example'
+  defaults:
+    _title: 'Example'
+    _controller: '\Drupal\mymodule\Controller\MymoduleController::build'
+  requirements:
+    _permission: 'access content'
+
+mymodule.settings_form:
+  path: '/admin/config/system/mymodule'
+  defaults:
+    _title: 'Mymodule settings'
+    _form: 'Drupal\mymodule\Form\SettingsForm'
+  requirements:
+    _permission: 'administer mymodule configuration'

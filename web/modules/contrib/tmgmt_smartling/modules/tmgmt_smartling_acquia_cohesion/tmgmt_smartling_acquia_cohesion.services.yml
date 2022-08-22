@@ -1,0 +1,8 @@
+services:
+  tmgmt_smartling_acquia_cohesion.data_converter:
+    class: \Drupal\tmgmt_smartling_acquia_cohesion\AcquiaCohesionDataConverter
+    arguments: ['@logger.channel.smartling']
+
+  tmgmt_smartling_acquia_cohesion.data_suggester:
+    class: \Drupal\tmgmt_smartling_acquia_cohesion\AcquiaCohesionDataSuggester
+    arguments: ['@logger.channel.smartling']

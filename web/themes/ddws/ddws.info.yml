@@ -1,0 +1,33 @@
+name: DDWS
+type: theme
+base theme: false
+description: custom theme
+package: Custom
+core: 8.x
+core_version_requirement: ^8 || ^9
+libraries:
+  - ddws/global
+regions:
+  header: 'Header'
+  overment: 'Overment of india'
+  logo: 'Logo'
+  language: 'Language'
+  text: 'Size of text'
+  primary_menu: 'Primary menu'
+  secondary_menu: 'Secondary menu'
+  news: 'What a news'
+  services: 'Service'
+  miniter: 'Minister'
+  page_top: 'Page top'
+  page_bottom: 'Page bottom'
+  featured: 'Featured'
+  about: 'About'
+  photo: 'Photo'
+  breadcrumb: 'Breadcrumb'
+  content: 'Content'
+  icon: 'Company icon'
+  feature_second: 'Feature logo'
+  sidebar_first: 'Sidebar first'
+  sidebar_second: 'Sidebar second'
+  footer: 'Footer'
+  footer_second: 'Footer Second'

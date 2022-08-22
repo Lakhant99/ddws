@@ -1,0 +1,256 @@
+<?php
+
+/**
+ * @file
+ * Update function for the tmgmt_smartling module.
+ */
+use Drupal\Core\Config\FileStorage;
+use Drupal\Core\Config\InstallStorage;
+use Drupal\Core\Database\Database;
+use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Utility\UpdateException;
+
+/**
+ * Define needed states.
+ *
+ * Variable 'tmgmt_smartling.bucket_name' must be unique per installation and
+ * must not be deleted when module is being uninstalled.
+ */
+function tmgmt_smartling_install() {
+  if (!Drupal::state()->get('tmgmt_smartling.bucket_name', FALSE)) {
+    Drupal::state()->set('tmgmt_smartling.bucket_name', uniqid());
+  }
+
+  tmgmt_extension_suit_init_default_config_values();
+}
+
+/**
+ * Set default custom_regexp_placeholder string.
+ */
+function tmgmt_smartling_update_8001() {
+
+  $custom_regexp_placeholder = \Drupal::config('tmgmt.translator.smartling')->get('settings.custom_regexp_placeholder');
+
+  // Update custom_regexp_placeholder if not already set.
+  if (empty($custom_regexp_placeholder)) {
+    \Drupal::configFactory()
+      ->getEditable('tmgmt.translator.smartling')
+      ->set('settings.custom_regexp_placeholder', '(@|%|!)[\w-]+')
+      ->save(TRUE);
+  }
+}
+
+/**
+ * Add file name into job entries.
+ */
+function tmgmt_smartling_update_8002() {
+  drupal_flush_all_caches();
+
+  // Apply new field to a job entity.
+  Drupal::service('entity.definition_update_manager')->applyUpdates();
+
+  Drupal::database()->update('tmgmt_job')
+    ->expression(
+      'job_file_name',
+      'CONCAT(:job, tmgmt_job.tjid, :underscore, tmgmt_job.source_language, :underscore, tmgmt_job.target_language, :extension)',
+      [
+        ':job' => 'JobID',
+        ':underscore' => '_',
+        ':extension' => '.xlf',
+      ]
+    )
+    ->execute();
+
+  $translator_ids = \Drupal::configFactory()->listAll('tmgmt.translator');
+  foreach ($translator_ids as $id) {
+    $config = \Drupal::configFactory()->getEditable($id);
+
+    if ($config && $config->get('plugin') === 'smartling') {
+        $config->set('settings.export_format', 'xlf')->save(TRUE);
+    }
+  }
+}
+
+/**
+ * Enable needed dependency.
+ */
+function tmgmt_smartling_update_8003() {
+  // Check if dependency exists. Not enabled/disabled, but exists or not.
+  $dependency_exists = module_load_include('module', 'tmgmt_extension_suit');
+
+  if (!$dependency_exists) {
+    throw new UpdateException('Unresolved dependency: tmgmt_extension_suit (missing).');
+  }
+
+  // Enable module if it's not enabled yet.
+  if (!Drupal::service('module_handler')->moduleExists('tmgmt_extension_suit')) {
+    Drupal::service('module_installer')->install(['tmgmt_extension_suit']);
+  }
+}
+
+/**
+ * Migrate users from fake xml (html) to new xml format.
+ */
+function tmgmt_smartling_update_8004() {
+  $translator_ids = \Drupal::configFactory()->listAll('tmgmt.translator');
+
+  foreach ($translator_ids as $id) {
+    $config = \Drupal::configFactory()->getEditable($id);
+
+    if ($config && $config->get('plugin') === 'smartling' && $config->get('settings')['export_format'] === 'html') {
+      $config->set('settings.export_format', 'xml')->save(TRUE);
+    }
+  }
+
+  // There are might be affected titles with encoded special chars. Fix it.
+  \Drupal::database()->update('node_field_data', [
+    'allow_delimiter_in_query' => TRUE,
+  ])
+    ->expression('title', "REPLACE(title, '&amp;', '&')")
+    ->condition('title', '%&amp;%', 'LIKE')
+    ->condition('langcode', 'en', '!=')
+    ->execute();
+
+  \Drupal::database()->update('node_field_revision', [
+    'allow_delimiter_in_query' => TRUE,
+  ])
+    ->expression('title', 'REPLACE(title, \'&amp;\', \'&\')')
+    ->condition('title', '%&amp;%', 'LIKE')
+    ->condition('langcode', 'en', '!=')
+    ->execute();
+}
+
+/**
+ * Add new field to a job entity.
+ */
+function tmgmt_smartling_update_8005() {
+  drupal_flush_all_caches();
+
+  Drupal::service('entity.definition_update_manager')->applyUpdates();
+}
+
+/**
+ * Rebuild the container as services changed.
+ */
+function tmgmt_smartling_update_8006() {
+  drupal_flush_all_caches();
+}
+
+/**
+ * Rebuild the container as services changed.
+ */
+function tmgmt_smartling_update_8007() {
+  drupal_flush_all_caches();
+}
+
+/**
+ * Set format to xml.
+ */
+function tmgmt_smartling_update_8401() {
+  $translator_ids = \Drupal::configFactory()->listAll('tmgmt.translator');
+
+  foreach ($translator_ids as $id) {
+    $config = \Drupal::configFactory()->getEditable($id);
+
+    if ($config && $config->get('plugin') === 'smartling') {
+      $config->set('settings.export_format', 'xml')->save(TRUE);
+    }
+  }
+
+  Drupal::state()->set('tmgmt_smartling.bucket_name', uniqid());
+}
+
+/**
+ * Add missing job_file_content_hash column to tmgmt_job table if does not exist yet.
+ */
+function tmgmt_smartling_update_8402() {
+    $entity_definition_manager = Drupal::entityDefinitionUpdateManager();
+    $schema = Database::getConnection()->schema();
+
+    if (!$schema->fieldExists("tmgmt_job", "job_file_content_hash")) {
+        $field_storage_definition = BaseFieldDefinition::create('string')
+            ->setLabel(t('File content hash (md5)'))
+            ->setSetting('max_length', 32)
+            ->setTranslatable(FALSE);
+
+        $entity_definition_manager
+            ->installFieldStorageDefinition('job_file_content_hash', 'tmgmt_job', 'tmgmt_smartling', $field_storage_definition);
+    }
+}
+
+/**
+ * Set default translatable_attributes string.
+ */
+function tmgmt_smartling_update_8403() {
+    $translator_ids = \Drupal::configFactory()->listAll('tmgmt.translator');
+
+    foreach ($translator_ids as $id) {
+        $config = \Drupal::configFactory()->getEditable($id);
+
+        if ($config && $config->get('plugin') === 'smartling') {
+            $config->set('settings.translatable_attributes', 'title, alt')->save(TRUE);
+        }
+    }
+}
+
+/**
+ * Create download by job items action plugin.
+ */
+function tmgmt_smartling_update_8804() {
+  try {
+    $plugin_id = 'tmgmt_smartling_download_by_job_items_job_action';
+    $plugin_name = 'system.action.tmgmt_smartling_download_by_job_items_job_action';
+    $entity_type_manager = \Drupal::entityTypeManager();
+    $module_handler = \Drupal::moduleHandler();
+    $config_install_path = $module_handler->getModule('tmgmt_smartling')
+        ->getPath() . '/' . InstallStorage::CONFIG_INSTALL_DIRECTORY;
+    $action_storage = $entity_type_manager->getStorage('action');
+    $action = $action_storage->load($plugin_id);
+
+    // Create action if it doesn't exist.
+    if (!$action) {
+      $storage = new FileStorage($config_install_path);
+      $read_file = $storage->read($plugin_name);
+
+      if ($read_file) {
+        $entity_type_manager
+          ->getStorage('action')
+          ->create($read_file)
+          ->save();
+      }
+    }
+  }
+  catch (Exception $e) {
+    throw new UpdateException('Unable to create "tmgmt_smartling_download_by_job_items_job_action" action.');
+  }
+}
+
+/**
+ * Set default exclude_translatable_attributes string.
+ */
+function tmgmt_smartling_update_8805() {
+  $translator_ids = \Drupal::configFactory()->listAll('tmgmt.translator');
+
+  foreach ($translator_ids as $id) {
+    $config = \Drupal::configFactory()->getEditable($id);
+
+    if ($config && $config->get('plugin') === 'smartling') {
+      $config->set('settings.exclude_translatable_attributes', '')->save(TRUE);
+    }
+  }
+}
+
+/**
+ * Set default force_block_for_tags string.
+ */
+function tmgmt_smartling_update_8806() {
+  $translator_ids = \Drupal::configFactory()->listAll('tmgmt.translator');
+
+  foreach ($translator_ids as $id) {
+    $config = \Drupal::configFactory()->getEditable($id);
+
+    if ($config && $config->get('plugin') === 'smartling') {
+      $config->set('settings.force_block_for_tags', '')->save(TRUE);
+    }
+  }
+}

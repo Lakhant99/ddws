@@ -1,0 +1,13 @@
+<?php
+
+/**
+ * @file
+ * Update function for the tmgmt_extension_suit_test module.
+ */
+
+/**
+ * Set default "track changes by provider and target languages" config values.
+ */
+function tmgmt_extension_suit_test_install() {
+  tmgmt_extension_suit_init_default_config_values();
+}

@@ -1,0 +1,33 @@
+<?php
+use Drupal\tmgmt\JobInterface;
+use Drupal\tmgmt\JobItemInterface;
+
+/**
+ * @file
+ * Contains Acquia Cohesion support implementation.
+ */
+
+/**
+ * Implements hook_tmgmt_smartling_xml_file_export_data_alter().
+ */
+function tmgmt_smartling_acquia_cohesion_tmgmt_smartling_xml_file_export_data_alter(array &$data) {
+  $data = \Drupal::service('tmgmt_smartling_acquia_cohesion.data_converter')->findAndConvertCohesionJsonDataToCohesionXmlData($data);
+}
+
+/**
+ * Implements hook_tmgmt_smartling_xml_file_import_data_alter().
+ */
+function tmgmt_smartling_acquia_cohesion_tmgmt_smartling_xml_file_import_data_alter(array &$data) {
+  $data = \Drupal::service('tmgmt_smartling_acquia_cohesion.data_converter')->findAndConvertCohesionXmlDataToCohesionJsonData($data);
+}
+
+/**
+ * Implements hook_tmgmt_source_suggestions().
+ */
+function tmgmt_smartling_acquia_cohesion_tmgmt_source_suggestions(array $items, JobInterface $job) {
+  $jobItems = array_filter($items, function($item) {
+    return $item instanceof JobItemInterface && $item->getPlugin() == 'content';
+  });
+
+  return \Drupal::service('tmgmt_smartling_acquia_cohesion.data_suggester')->suggestCohesionContentComponents($jobItems);
+}

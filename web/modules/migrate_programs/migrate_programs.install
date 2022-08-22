@@ -1,0 +1,9 @@
+<?php
+
+/**
+ * Implements hook_install().
+ */
+function migrate_programs_install() {
+  // Force migrations to be registered.
+  migrate_static_registration();
+}

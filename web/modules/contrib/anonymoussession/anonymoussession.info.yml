@@ -1,0 +1,9 @@
+name: Anonymous session toolkit
+description: Add consistent session usage for anonymous users to your custom code
+core_version_requirement: ^8 || ^9
+type: module
+
+# Information added by Drupal.org packaging script on 2021-02-19
+version: '1.0.1'
+project: 'anonymoussession'
+datestamp: 1613748402

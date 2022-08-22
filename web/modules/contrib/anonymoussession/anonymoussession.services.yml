@@ -1,0 +1,6 @@
+services:
+  anonymoussession:
+    class: Drupal\anonymoussession\Services\AnonymousSessionService
+    arguments:
+      - '@session_manager'
+      - '@current_user'

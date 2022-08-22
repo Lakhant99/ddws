@@ -1,0 +1,11 @@
+# Main theme library.
+global:
+  js:
+    js/ddws.js: {}
+  css:
+    base:
+      css/style.css: {}
+    layout:
+      css/layouts/layout.css: {}
+    theme:
+      css/theme/print.css: { media: print }
